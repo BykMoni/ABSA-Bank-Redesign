@@ -3,20 +3,27 @@ import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
 import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
 const AccountItem = ({ icon, iconColor, title, subtitle, amount, status, rightButton }) => (
   <View style={styles.accountItem}>
     <View style={[styles.accountIcon, { backgroundColor: iconColor }]}>
-      <MaterialCommunityIcons name={icon} size={24} color="#fff" />
+      <MaterialCommunityIcons
+        name={icon}
+        size={24}
+        color={icon === "netflix" ? "rgba(214, 0, 0, 1)" : "#fff"}
+      />
     </View>
     <View style={styles.accountDetails}>
       <Text style={styles.accountTitle}>{title}</Text>
       <Text style={styles.accountSubtitle}>{subtitle}</Text>
     </View>
     <View style={styles.accountRight}>
-      <Text style={styles.accountAmount}>GHC {amount}</Text>
+      {amount !== undefined && amount !== "" && (
+        <Text style={styles.accountAmount}>GHC {amount}</Text>
+      )}
       {status && <Text style={styles.accountStatus}>{status}</Text>}
       {rightButton && (
         <TouchableOpacity style={styles.manageButton}>
@@ -28,14 +35,19 @@ const AccountItem = ({ icon, iconColor, title, subtitle, amount, status, rightBu
 );
 
 export default function AccountsScreen() {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.safe}>
       {/* Fixed red header (NOT inside the ScrollView) */}
       <View style={styles.redHeader}>
         <View style={styles.headerTop}>
-          <TouchableOpacity>
+          {/* Back arrow navigates to Overview tab */}
+         <TouchableOpacity onPress={() => navigation.navigate("OverviewScreen")}>
             <Feather name="arrow-left" size={24} color="#fff" />
           </TouchableOpacity>
+
+
           <TouchableOpacity style={styles.addAccountButton}>
             <Feather name="plus" size={20} color="#fff" />
             <Text style={styles.addAccountText}>Add New Account</Text>
@@ -55,7 +67,7 @@ export default function AccountsScreen() {
         <View style={[styles.trendlineWrap, { marginTop: 200 }]} pointerEvents="none">
           <Svg width={width} height={50} viewBox={`0 0 ${width} 50`} preserveAspectRatio="xMidYMid slice">
             <Path
-              d="M8 30 C 28 10, 58 40, 88 30 S 168 5, 198 30 S 258 50, 298 30 S 338 5, 352 20"
+              d="M8 70 C 30 80, 58 -10, 88 30 S 168 5, 198 30 S 258 50, 290 15 S 500 35, 52 -200"
               stroke="#fff"
               strokeWidth={2}
               fill="none"
@@ -63,7 +75,6 @@ export default function AccountsScreen() {
             />
           </Svg>
         </View>
-
       </View>
 
       {/* Scrollable area: only this scrolls */}
@@ -71,13 +82,18 @@ export default function AccountsScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Pull the white content up so it overlaps the fixed red header & trendline */}
+        {/* White content pulled up so it overlaps the fixed red header & trendline */}
         <View style={styles.whiteContent}>
           {/* My Accounts Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>My Accounts</Text>
-              <TouchableOpacity style={styles.expensesButton}>
+              
+              {/* Expenses button navigates to Transactions tab */}
+              <TouchableOpacity
+                style={styles.expensesButton}
+                onPress={() => navigation.navigate("Transact")}
+              >
                 <Text style={styles.expensesButtonText}>Expenses</Text>
                 <Feather name="chevron-right" size={16} color="#fff" />
               </TouchableOpacity>
@@ -132,18 +148,16 @@ export default function AccountsScreen() {
             <AccountItem
               icon="spotify"
               iconColor="#1DB954"
-              title="Apple Music"
+              title="Spotify"
               subtitle="Next payment due on 27 Aug."
-              amount=""
               rightButton="Manage"
             />
 
             <AccountItem
               icon="netflix"
-              iconColor="#E50914"
+              iconColor="black"
               title="Netflix"
               subtitle="Next payment due on 7 Aug."
-              amount=""
               rightButton="Manage"
             />
           </View>
@@ -159,7 +173,7 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: '#fff',
-    top:40,
+    top: 40,
   },
 
   /* fixed red header */
@@ -193,7 +207,7 @@ const styles = StyleSheet.create({
   addAccountText: {
     color: '#fff',
     marginLeft: 5,
-    fontSize: 14,
+    fontSize: 12,
   },
   totalBalanceSection: {
     alignItems: 'center',
@@ -204,36 +218,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     opacity: 0.95,
     marginBottom: 8,
-    right:70,
+    right: 70,
   },
   totalBalanceAmount: {
     color: '#fff',
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 8,
-    right:25,
+    right: 25,
   },
   growthSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    right:50,
-    
+    right: 50,
   },
   growthText: {
     color: '#fff',
     marginLeft: 5,
     fontSize: 14,
-    
   },
 
   /* trendline (SVG) wrapper - fixed inside header */
   trendlineWrap: {
-  position: 'absolute',
-  top: 'auto',
-  left: 0,
-  right: 0,
-  alignItems: 'center',
-},
+    position: 'absolute',
+    top: 'auto',
+    left: '10%',
+    width: '80%',
+    alignItems: 'center',
+  },
 
   /* ScrollView content container: add top padding so content starts below header */
   scrollContent: {
@@ -241,12 +253,12 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
 
-  /* White content pulled up to overlap trendline (higher zIndex so it covers fixed trendline when scrolling) */
+  /* White content pulled up to overlap trendline */
   whiteContent: {
     backgroundColor: '#fff',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    marginTop: -20, // overlap amount (tune as needed)
+    marginTop: -20, // overlap amount
     padding: 20,
     zIndex: 2,
   },
@@ -319,11 +331,12 @@ const styles = StyleSheet.create({
     color: '#4CAF50',
   },
   manageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#C20B2F',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 12,
-    marginTop: 4,
+    borderRadius: 15,
   },
   manageButtonText: {
     color: '#fff',
