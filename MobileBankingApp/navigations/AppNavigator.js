@@ -52,7 +52,7 @@ const AppNavigator = () => {
         />
         <Tab.Screen
           name="Transact"
-          component={TransactionsScreen}
+          component={""}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="swap-horizontal" size={size} color={color} />
@@ -61,7 +61,7 @@ const AppNavigator = () => {
         />
         <Tab.Screen
           name="Settings"
-          component={SettingsScreen}
+          component={""}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="cog" size={size} color={color} />
