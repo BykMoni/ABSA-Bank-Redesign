@@ -1,6 +1,10 @@
+// AccountsScreen.js — red header fixed; only My Accounts scrolls (trendline fixed)
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
 import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import Svg, { Path } from 'react-native-svg';
+
+const { width } = Dimensions.get('window');
 
 const AccountItem = ({ icon, iconColor, title, subtitle, amount, status, rightButton }) => (
   <View style={styles.accountItem}>
@@ -25,31 +29,49 @@ const AccountItem = ({ icon, iconColor, title, subtitle, amount, status, rightBu
 
 export default function AccountsScreen() {
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header with Total Balance */}
-        <View style={styles.redHeader}>
-          <View style={styles.headerTop}>
-            <TouchableOpacity>
-              <Feather name="arrow-left" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.addAccountButton}>
-              <Feather name="plus" size={20} color="#fff" />
-              <Text style={styles.addAccountText}>Add New Account</Text>
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.totalBalanceSection}>
-            <Text style={styles.totalBalanceLabel}>Total Available Balance</Text>
-            <Text style={styles.totalBalanceAmount}>GHC 150,000.00</Text>
-            <View style={styles.growthSection}>
-              <Feather name="trending-up" size={16} color="#fff" />
-              <Text style={styles.growthText}>60% more than last month</Text>
-            </View>
+    <SafeAreaView style={styles.safe}>
+      {/* Fixed red header (NOT inside the ScrollView) */}
+      <View style={styles.redHeader}>
+        <View style={styles.headerTop}>
+          <TouchableOpacity>
+            <Feather name="arrow-left" size={24} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.addAccountButton}>
+            <Feather name="plus" size={20} color="#fff" />
+            <Text style={styles.addAccountText}>Add New Account</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.totalBalanceSection}>
+          <Text style={styles.totalBalanceLabel}>Total Available Balance</Text>
+          <Text style={styles.totalBalanceAmount}>GHC 150,000.00</Text>
+          <View style={styles.growthSection}>
+            <Feather name="trending-up" size={16} color="#fff" />
+            <Text style={styles.growthText}>60% more than last month</Text>
           </View>
         </View>
 
-        {/* White Content Area */}
+        {/* Trendline stays fixed because redHeader is fixed */}
+        <View style={[styles.trendlineWrap, { marginTop: 200 }]} pointerEvents="none">
+          <Svg width={width} height={50} viewBox={`0 0 ${width} 50`} preserveAspectRatio="xMidYMid slice">
+            <Path
+              d="M8 30 C 28 10, 58 40, 88 30 S 168 5, 198 30 S 258 50, 298 30 S 338 5, 352 20"
+              stroke="#fff"
+              strokeWidth={2}
+              fill="none"
+              strokeLinecap="round"
+            />
+          </Svg>
+        </View>
+
+      </View>
+
+      {/* Scrollable area: only this scrolls */}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Pull the white content up so it overlaps the fixed red header & trendline */}
         <View style={styles.whiteContent}>
           {/* My Accounts Section */}
           <View style={styles.section}>
@@ -60,7 +82,7 @@ export default function AccountsScreen() {
                 <Feather name="chevron-right" size={16} color="#fff" />
               </TouchableOpacity>
             </View>
-            
+
             <AccountItem
               icon="currency-usd"
               iconColor="#C20B2F"
@@ -69,7 +91,7 @@ export default function AccountsScreen() {
               amount="100,000.00"
               status="● ACTIVE"
             />
-            
+
             <AccountItem
               icon="school"
               iconColor="#C20B2F"
@@ -83,7 +105,7 @@ export default function AccountsScreen() {
           {/* Investments Section */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Investments</Text>
-            
+
             <AccountItem
               icon="trending-up"
               iconColor="#C20B2F"
@@ -92,7 +114,7 @@ export default function AccountsScreen() {
               amount="2,000.00"
               status="● ACTIVE"
             />
-            
+
             <AccountItem
               icon="chart-line"
               iconColor="#C20B2F"
@@ -106,7 +128,7 @@ export default function AccountsScreen() {
           {/* Subscriptions Section */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Subscriptions</Text>
-            
+
             <AccountItem
               icon="spotify"
               iconColor="#1DB954"
@@ -115,7 +137,7 @@ export default function AccountsScreen() {
               amount=""
               rightButton="Manage"
             />
-            
+
             <AccountItem
               icon="netflix"
               iconColor="#E50914"
@@ -131,25 +153,34 @@ export default function AccountsScreen() {
   );
 }
 
+/* Styles */
+const HEADER_HEIGHT = 300; // fixed header height
 const styles = StyleSheet.create({
-  container: {
+  safe: {
     flex: 1,
-    backgroundColor: '#C20B2F',
+    backgroundColor: '#fff',
+    top:40,
   },
-  scrollContent: {
-    flexGrow: 1,
-  },
+
+  /* fixed red header */
   redHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: HEADER_HEIGHT,
     backgroundColor: '#C20B2F',
     paddingHorizontal: 20,
     paddingTop: 10,
-    paddingBottom: 20,
+    paddingBottom: 0,
+    zIndex: 0, // trendline behind whiteContent
   },
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 6,
+    marginTop: 6,
   },
   addAccountButton: {
     flexDirection: 'row',
@@ -166,35 +197,60 @@ const styles = StyleSheet.create({
   },
   totalBalanceSection: {
     alignItems: 'center',
+    marginTop: 6,
   },
   totalBalanceLabel: {
-    color: '#fff',
-    fontSize: 16,
-    marginBottom: 10,
+    color: '#f8fafc',
+    fontSize: 14,
+    opacity: 0.95,
+    marginBottom: 8,
+    right:70,
   },
   totalBalanceAmount: {
     color: '#fff',
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 8,
+    right:25,
   },
   growthSection: {
     flexDirection: 'row',
     alignItems: 'center',
+    right:50,
+    
   },
   growthText: {
     color: '#fff',
     marginLeft: 5,
     fontSize: 14,
+    
   },
+
+  /* trendline (SVG) wrapper - fixed inside header */
+  trendlineWrap: {
+  position: 'absolute',
+  top: 'auto',
+  left: 0,
+  right: 0,
+  alignItems: 'center',
+},
+
+  /* ScrollView content container: add top padding so content starts below header */
+  scrollContent: {
+    paddingTop: HEADER_HEIGHT, // leave space so whiteContent overlaps header nicely
+    paddingBottom: 40,
+  },
+
+  /* White content pulled up to overlap trendline (higher zIndex so it covers fixed trendline when scrolling) */
   whiteContent: {
-    flex: 1,
     backgroundColor: '#fff',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    marginTop: 10,
+    marginTop: -20, // overlap amount (tune as needed)
     padding: 20,
+    zIndex: 2,
   },
+
   section: {
     marginBottom: 30,
   },
@@ -222,6 +278,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
     fontSize: 12,
   },
+
   accountItem: {
     flexDirection: 'row',
     alignItems: 'center',
