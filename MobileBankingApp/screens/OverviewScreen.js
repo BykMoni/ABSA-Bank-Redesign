@@ -1,252 +1,249 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView,
+  Dimensions,
+} from 'react-native';
+import { MaterialCommunityIcons, Feather, Ionicons } from '@expo/vector-icons';
 
-// Asset paths - these should be actual images in your assets folder
-const absaLogo = require('../assets/icon.png'); // Using default icon for now
-const profilePic = require('../assets/icon.png'); // Using default icon for now
+const { width } = Dimensions.get('window');
+const profilePic = require('../assets/UserProfile.jpg'); 
 
-const QuickActionItem = ({ icon, title, subtitle }) => (
-  <TouchableOpacity style={styles.quickActionItem}>
-    <View style={styles.quickActionIconContainer}>
-      <MaterialCommunityIcons name={icon} size={28} color="#000" />
+const QuickAction = ({ iconName, title, subtitle, onPress }) => (
+  <TouchableOpacity style={styles.actionCard} onPress={onPress} activeOpacity={0.75}>
+    <View style={styles.actionIconCircle}>
+      <MaterialCommunityIcons name={iconName} size={20} color="#fff" />
     </View>
-    <Text style={styles.quickActionTitle}>{title}</Text>
-    <Text style={styles.quickActionSubtitle}>{subtitle}</Text>
+    <View style={styles.actionTextWrap}>
+      <Text style={styles.actionTitle}>{title}</Text>
+      <Text style={styles.actionSubtitle}>{subtitle}</Text>
+    </View>
   </TouchableOpacity>
 );
 
-const TransactionItem = ({ icon, direction, description, date, amount }) => (
-  <View style={styles.transactionItem}>
-    <View style={styles.transactionIconContainer}>
-      <MaterialCommunityIcons 
-        name={icon} 
-        size={20} 
-        color={direction === 'in' ? 'green' : 'red'} 
-      />
+const TxRow = ({ incoming, title, subtitle, date, amount }) => (
+  <View style={styles.txRow}>
+    <View style={styles.txLeft}>
+      <View style={styles.txBadge}>
+        <Ionicons
+          name={incoming ? 'arrow-down' : 'arrow-up'}
+          size={16}
+          color={incoming ? '#10b981' : '#ef4444'} 
+          style={{ transform: [{ rotate: '305deg' }] }}
+        />
+      </View>
+      <View>
+        <Text style={styles.txTitle}>{title}</Text>
+        <Text style={styles.txSubtitle}>{subtitle}</Text>
+      </View>
     </View>
-    <View style={styles.transactionDetails}>
-      <Text style={styles.transactionDescription}>{description}</Text>
-      <Text style={styles.transactionDate}>{date}</Text>
+
+    <View style={styles.txRight}>
+      <Text style={styles.txAmount}>{`GHC ${Math.abs(amount).toLocaleString()}.00`}</Text>
+      <Text style={styles.txDate}>{date}</Text>
     </View>
-    <Text style={styles.transactionAmount}>GHC {amount}</Text>
   </View>
 );
 
 export default function OverviewScreen() {
+  const transactions = [
+    { id: '1', incoming: true, title: 'From 233 Cars', subtitle: 'Payout', date: '1 JUL, 2025', amount: 5000 },
+    { id: '2', incoming: true, title: 'From ysavedep', subtitle: 'Payout', date: '15 March, 2025', amount: 15000 },
+    { id: '3', incoming: false, title: 'To Marie', subtitle: 'MoMo Transfer', date: '12 March, 2025', amount: -2000 },
+  ];
+
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <SafeAreaView style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.wrap} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.profileSection}>
-            <Image source={profilePic} style={styles.profilePic} />
-            <Text style={styles.welcomeText}>Welcome Daniel</Text>
+          <View style={styles.headerLeft}>
+            <Image source={profilePic} style={styles.avatar} />
+            <Text style={styles.welcome}>Welcome Daniel</Text>
           </View>
-          <TouchableOpacity>
-            <Feather name="refresh-cw" size={24} color="#000" />
+          <TouchableOpacity style={styles.swapBtn} accessibilityLabel="Switch account">
+            <Feather name="repeat" size={20} color="#111827" />
           </TouchableOpacity>
         </View>
 
         {/* Balance Card */}
-        <View style={styles.balanceCard}>
-          <View style={styles.balanceHeader}>
-            <Text style={styles.balanceText}>Available Balance</Text>
-            <TouchableOpacity>
-              <Feather name="eye" size={20} color="#fff" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.balanceDetails}>
-            <View>
-              <Text style={styles.balanceAmount}>GHC 150,000.00</Text>
-              <Text style={styles.accountText}>Ignition Student</Text>
-              <Text style={styles.accountText}>xxxx xx71</Text>
+        <View style={styles.cardContainer}>
+          <View style={styles.card}>
+            {/* Label only */}
+            <Text style={styles.cardLabel}>Available Balance</Text>
+
+            {/* Balance row: amount + eye */}
+            <View style={styles.balanceRow}>
+              <Text style={styles.cardBalance}>GHC 150,000.00</Text>
+              <TouchableOpacity style={styles.eyeBtn} accessibilityLabel="toggle balance">
+                <Feather name="eye" size={18} color="#fff" />
+              </TouchableOpacity>
             </View>
-            <View style={styles.absaLogoContainer}>
-              <Text style={styles.absaText}>absa</Text>
+
+            {/* Bottom row: account + absa circle */}
+            <View style={styles.cardBottomRow}>
+              <View>
+                <Text style={styles.cardAccount}>Ignition Student</Text>
+                <Text style={styles.cardAccountSmall}>xxxx xx71</Text>
+              </View>
+
+              <View style={styles.cardLogoWrap} pointerEvents="none">
+                <View style={styles.cardLogoDashed}>
+                  <Text style={styles.cardLogoText}>absa</Text>
+                </View>
+              </View>
             </View>
           </View>
         </View>
 
-        {/* Quick Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick actions</Text>
-          <View style={styles.quickActionsGrid}>
-            <QuickActionItem icon="credit-card-outline" title="Pay Bill" subtitle="DSTV, Electricity etc" />
-            <QuickActionItem icon="bank-outline" title="Bank Transfer" subtitle="ABSA, local banks" />
-            <QuickActionItem icon="cellphone" title="Mobile Money" subtitle="MTN, Telecel, etc" />
-            <QuickActionItem icon="qrcode-scan" title="Scan QR code" subtitle="Instant transaction" />
-          </View>
+        {/* Quick actions */}
+        <Text style={styles.sectionTitle}>Quick actions</Text>
+        <View style={styles.actionsGrid}>
+          <QuickAction iconName="file-document-outline" title="Pay Bill" subtitle="DSTV, Electricity etc" />
+          <QuickAction iconName="bank" title="Bank Transfer" subtitle="ABSA, local banks" />
+          <QuickAction iconName="cellphone" title="Mobile Money" subtitle="MTN, Telecel, etc" />
+          <QuickAction iconName="qrcode-scan" title="Scan QR code" subtitle="Instant transaction" />
         </View>
 
-        {/* Recent Transactions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recent transactions</Text>
-          <TransactionItem 
-            icon="arrow-bottom-left" 
-            direction="in" 
-            description="From 233 Cars" 
-            date="1 JUL, 2025" 
-            amount="5,000.00" 
-          />
-          <TransactionItem 
-            icon="arrow-bottom-left" 
-            direction="in" 
-            description="From ysavedep" 
-            date="15 March,2025" 
-            amount="15,000.00" 
-          />
-          <TransactionItem 
-            icon="arrow-top-right" 
-            direction="out" 
-            description="To Marie" 
-            date="12 March, 2025" 
-            amount="2,000.00" 
-          />
+        {/* Recent transactions */}
+        <Text style={[styles.sectionTitle, { marginTop: 18 }]}>Recent transactions</Text>
+        <View style={styles.txList}>
+          {transactions.map((t) => (
+            <TxRow
+              key={t.id}
+              incoming={t.incoming}
+              title={t.title}
+              subtitle={t.subtitle}
+              date={t.date}
+              amount={t.amount}
+            />
+          ))}
         </View>
+
+        <View style={{ height: 110 }} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
+/* Styles */
+const CARD_H = 140;
+const ACTION_W = (width - 40 - 16) / 2;
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 10,
-    paddingBottom: 20,
-  },
-  profileSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profilePic: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  welcomeText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  balanceCard: {
+  safe: { flex: 1, backgroundColor: '#ffffff', top: 40 },
+  wrap: { paddingHorizontal: 20, paddingTop: 12 },
+
+  /* Header */
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
+  headerLeft: { flexDirection: 'row', alignItems: 'center' },
+  avatar: { width: 44, height: 44, borderRadius: 22, marginRight: 12 },
+  welcome: { fontSize: 20, fontWeight: '700', color: '#111827' },
+  swapBtn: { padding: 6 },
+
+  /* Card */
+  cardContainer: { marginTop: 8, marginBottom: 16 },
+  card: {
+    height: CARD_H,
+    borderRadius: 12,
     backgroundColor: '#C20B2F',
-    borderRadius: 15,
-    padding: 20,
-    marginBottom: 20,
-  },
-  balanceHeader: {
-    flexDirection: 'row',
+    padding: 18,
+    overflow: 'hidden',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
   },
-  balanceText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  balanceDetails: {
+  cardLabel: { color: '#f8fafc', fontSize: 14, opacity: 0.95 },
+
+  balanceRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 6,
   },
-  balanceAmount: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  accountText: {
-    color: '#fff',
-    fontSize: 14,
-    opacity: 0.8,
-  },
-  absaLogoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+
+  cardBalance: { color: '#fff', fontSize: 20, fontWeight: '800' },
+  eyeBtn: { padding: 6, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 8, right: 95 },
+
+  cardBottomRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', top:10 },
+  cardAccount: { color: '#fee2e2', fontSize: 14, marginTop: 6 },
+  cardAccountSmall: { color: '#fee2e2', fontSize: 13, marginTop: 4, opacity: 0.9 },
+
+  /* dashed circle with text 'absa' */
+  cardLogoWrap: {
+    width: 120,
+    height: 120,
+    position: 'absolute',
+    right: -25,
+    bottom: -40,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  cardLogoDashed: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 4,
+    borderColor: 'rgba(255,255,255,0.95)',
     borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
-  absaText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  quickActionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  quickActionItem: {
-    width: '48%',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-  },
-  quickActionIconContainer: {
-    marginBottom: 10,
-  },
-  quickActionTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  quickActionSubtitle: {
-    fontSize: 12,
-    color: '#888',
-  },
-  transactionItem: {
+  cardLogoText: { color: '#fff', fontSize: 34, fontWeight: '700', letterSpacing: 0.5 },
+
+  /* Quick actions */
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginTop: 6, marginBottom: 8 },
+  actionsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  actionCard: {
+    width: ACTION_W,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+    elevation: 1,
   },
-  transactionIconContainer: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#f0f0f0',
+  actionIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#C20B2F',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 12,
+    elevation: 2,
   },
-  transactionDetails: {
-    flex: 1,
+  actionTextWrap: { flex: 1 },
+  actionTitle: { fontSize: 15, fontWeight: '700', color: '#111827' },
+  actionSubtitle: { fontSize: 12, color: '#6b7280', marginTop: 4 },
+
+  /* Transactions */
+  txList: { marginTop: 6 },
+  txRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
   },
-  transactionDescription: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  txLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  txBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    backgroundColor: '#f3f4f6', 
   },
-  transactionDate: {
-    fontSize: 12,
-    color: '#888',
-  },
-  transactionAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  txTitle: { fontSize: 15, fontWeight: '700', color: '#111827' },
+  txSubtitle: { fontSize: 12, color: '#6b7280', marginTop: 4 },
+
+  txRight: { alignItems: 'flex-end', minWidth: 120 },
+  txAmount: { fontSize: 15, fontWeight: '800', color: '#111827' },
+  txDate: { fontSize: 12, color: '#6b7280', marginTop: 6 },
 });
