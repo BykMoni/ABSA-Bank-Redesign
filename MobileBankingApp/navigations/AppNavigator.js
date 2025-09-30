@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import OverviewScreen from '../screens/OverviewScreen';
 import AccountsScreen from '../screens/AccountsScreen';
-import TransactionsScreen from '../screens/TransactionsScreen';
+import ExpensesScreen from '../screens/ExpensesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
@@ -52,7 +52,7 @@ const AppNavigator = () => {
         />
         <Tab.Screen
           name="Transact"
-          component={""}
+          component={ExpensesScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="swap-horizontal" size={size} color={color} />
@@ -61,7 +61,7 @@ const AppNavigator = () => {
         />
         <Tab.Screen
           name="Settings"
-          component={""}
+          component={SettingsScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="cog" size={size} color={color} />

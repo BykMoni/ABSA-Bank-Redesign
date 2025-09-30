@@ -7,7 +7,7 @@ const PieChartSegment = ({ color, label, amount }) => (
   <View style={styles.chartLegendItem}>
     <View style={[styles.chartLegendColor, { backgroundColor: color }]} />
     <View style={styles.chartLegendDetails}>
-      <Text style={styles.chartLegendLabel}>● {label}</Text>
+      <Text style={styles.chartLegendLabel}>{label}</Text>
       <Text style={styles.chartLegendAmount}>GHC {amount}</Text>
     </View>
   </View>
@@ -86,7 +86,7 @@ const TransactionItem = ({ icon, direction, description, date, amount, subtitle 
   </View>
 );
 
-export default function TransactionsScreen() {
+export default function ExpensesScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -124,8 +124,8 @@ export default function TransactionsScreen() {
                 <PieChart 
                   size={120}
                   data={[
-                    { value: 2000, color: '#C20B2F' }, // Rent
-                    { value: 2500, color: '#FF6B00' }, // Chillings 
+                    { value: 2000, color: '#3c0bc2ff' }, // Rent
+                    { value: 2500, color: '#C20B2F' }, // Chillings 
                     { value: 9000, color: '#FFA500' }, // Building
                     { value: 1500, color: '#4CAF50' }  // Subs
                   ]}
@@ -138,8 +138,8 @@ export default function TransactionsScreen() {
               
               {/* Chart Legend */}
               <View style={styles.chartLegend}>
-                <PieChartSegment color="#C20B2F" label="Rent" amount="2,000.00" />
-                <PieChartSegment color="#FF6B00" label="Chillings" amount="2,500.00" />
+                <PieChartSegment color="#3c0bc2ff" label="Rent" amount="2,000.00" />
+                <PieChartSegment color="#C20B2F" label="Chillings" amount="2,500.00" />
                 <PieChartSegment color="#FFA500" label="Building" amount="9,000.00" />
                 <PieChartSegment color="#4CAF50" label="Subs" amount="1,500.00" />
               </View>
@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#C20B2F',
+    top: 40,
   },
   scrollContent: {
     flexGrow: 1,
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
   addAccountText: {
     color: '#fff',
     marginLeft: 5,
-    fontSize: 14,
+    fontSize: 12,
   },
   totalBalanceSection: {
     alignItems: 'center',
@@ -223,17 +224,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     marginBottom: 10,
+    right: 70,
   },
   totalBalanceAmount: {
     color: '#fff',
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 10,
+    right: 35,
   },
   budgetInfo: {
     color: '#fff',
     fontSize: 14,
     opacity: 0.9,
+    right: 5,
   },
   whiteContent: {
     flex: 1,
@@ -272,29 +276,30 @@ const styles = StyleSheet.create({
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
+    right: 10,
   },
   chartCenter: {
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 60,
-    height: 60,
+    width: 75,
+    height: 75,
     backgroundColor: '#fff',
-    borderRadius: 30,
+    borderRadius: 40,
   },
   chartCenterLabel: {
     fontSize: 10,
-    color: '#888',
     textAlign: 'center',
   },
   chartCenterAmount: {
     fontSize: 10,
     fontWeight: 'bold',
     textAlign: 'center',
+    color: '#3f3e3eff',
   },
   chartLegend: {
     flex: 1,
-    marginLeft: 20,
+    marginRight: 10,
   },
   chartLegendItem: {
     flexDirection: 'row',
