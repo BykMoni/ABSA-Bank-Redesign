@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import OverviewScreen from '../screens/OverviewScreen';
@@ -9,6 +10,17 @@ import ExpensesScreen from '../screens/ExpensesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+// Stack navigator for Accounts
+function AccountsStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="AccountsMain" component={AccountsScreen} />
+      <Stack.Screen name="ExpensesScreen" component={ExpensesScreen} />
+    </Stack.Navigator>
+  );
+}
 
 const AppNavigator = () => {
   return (
@@ -41,27 +53,30 @@ const AppNavigator = () => {
             ),
           }}
         />
+
         <Tab.Screen
           name="Accounts"
-          component={AccountsScreen}
+          component={AccountsStack}  // Stack with Expenses navigation
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="account-multiple" size={size} color={color} />
             ),
           }}
         />
+
         <Tab.Screen
           name="Transact"
-          component={ExpensesScreen}
+          component={""} // Fill later with TransactionsScreen
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="swap-horizontal" size={size} color={color} />
             ),
           }}
         />
+
         <Tab.Screen
           name="Settings"
-          component={SettingsScreen}
+          component={""}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="cog" size={size} color={color} />

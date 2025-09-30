@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-import Svg, { Circle, Path, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Path } from 'react-native-svg';
+import { useNavigation } from '@react-navigation/native';
 
 const PieChartSegment = ({ color, label, amount }) => (
   <View style={styles.chartLegendItem}>
@@ -16,25 +17,20 @@ const PieChartSegment = ({ color, label, amount }) => (
 const PieChart = ({ data, size = 120 }) => {
   const center = size / 2;
   const radius = size / 2 - 10;
-  
-  // Calculate angles for each segment
   const total = data.reduce((sum, item) => sum + item.value, 0);
-  let currentAngle = -90; // Start from top
-  
+  let currentAngle = -90;
+
   const createPath = (startAngle, endAngle) => {
     const startAngleRad = (startAngle * Math.PI) / 180;
     const endAngleRad = (endAngle * Math.PI) / 180;
-    
     const x1 = center + radius * Math.cos(startAngleRad);
     const y1 = center + radius * Math.sin(startAngleRad);
     const x2 = center + radius * Math.cos(endAngleRad);
     const y2 = center + radius * Math.sin(endAngleRad);
-    
     const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
-    
     return `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
   };
-  
+
   return (
     <Svg width={size} height={size}>
       {data.map((item, index) => {
@@ -42,26 +38,10 @@ const PieChart = ({ data, size = 120 }) => {
         const endAngle = currentAngle + angle;
         const path = createPath(currentAngle, endAngle);
         currentAngle = endAngle;
-        
-        return (
-          <Path
-            key={index}
-            d={path}
-            fill={item.color}
-            stroke="#fff"
-            strokeWidth="2"
-          />
-        );
+
+        return <Path key={index} d={path} fill={item.color} stroke="#fff" strokeWidth="2" />;
       })}
-      {/* Center circle for inner content */}
-      <Circle
-        cx={center}
-        cy={center}
-        r={radius * 0.5}
-        fill="#fff"
-        stroke="#f0f0f0"
-        strokeWidth="1"
-      />
+      <Circle cx={center} cy={center} r={radius * 0.5} fill="#fff" stroke="#f0f0f0" strokeWidth="1" />
     </Svg>
   );
 };
@@ -69,11 +49,7 @@ const PieChart = ({ data, size = 120 }) => {
 const TransactionItem = ({ icon, direction, description, date, amount, subtitle }) => (
   <View style={styles.transactionItem}>
     <View style={styles.transactionIconContainer}>
-      <MaterialCommunityIcons 
-        name={icon} 
-        size={20} 
-        color={direction === 'in' ? 'green' : 'red'} 
-      />
+      <MaterialCommunityIcons name={icon} size={20} color={direction === 'in' ? 'green' : 'red'} />
     </View>
     <View style={styles.transactionDetails}>
       <Text style={styles.transactionDescription}>{description}</Text>
@@ -87,21 +63,25 @@ const TransactionItem = ({ icon, direction, description, date, amount, subtitle 
 );
 
 export default function ExpensesScreen() {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.redHeader}>
           <View style={styles.headerTop}>
-            <TouchableOpacity>
+            {/* Back button navigates to Accounts page */}
+            <TouchableOpacity onPress={() => navigation.navigate("AccountsMain")}>
               <Feather name="arrow-left" size={24} color="#fff" />
             </TouchableOpacity>
+
             <TouchableOpacity style={styles.addAccountButton}>
               <Feather name="plus" size={20} color="#fff" />
               <Text style={styles.addAccountText}>Add New Account</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.totalBalanceSection}>
             <Text style={styles.totalBalanceLabel}>Total Available Balance</Text>
             <Text style={styles.totalBalanceAmount}>GHC 150,000.00</Text>
@@ -111,23 +91,22 @@ export default function ExpensesScreen() {
 
         {/* White Content Area */}
         <View style={styles.whiteContent}>
-          {/* Budget Overview with Date Selector */}
+          {/* Budget Overview with Pie Chart */}
           <View style={styles.budgetSection}>
             <TouchableOpacity style={styles.dateSelector}>
               <Text style={styles.dateText}>June, 2025</Text>
               <Feather name="chevron-down" size={16} color="#fff" />
             </TouchableOpacity>
 
-            {/* Pie Chart */}
             <View style={styles.chartContainer}>
               <View style={styles.pieChartWrapper}>
-                <PieChart 
+                <PieChart
                   size={120}
                   data={[
-                    { value: 2000, color: '#3c0bc2ff' }, // Rent
-                    { value: 2500, color: '#C20B2F' }, // Chillings 
-                    { value: 9000, color: '#FFA500' }, // Building
-                    { value: 1500, color: '#4CAF50' }  // Subs
+                    { value: 2000, color: '#3c0bc2ff' },
+                    { value: 2500, color: '#C20B2F' },
+                    { value: 9000, color: '#FFA500' },
+                    { value: 1500, color: '#4CAF50' },
                   ]}
                 />
                 <View style={styles.chartCenter}>
@@ -135,8 +114,7 @@ export default function ExpensesScreen() {
                   <Text style={styles.chartCenterAmount}>GHC 15,000.00</Text>
                 </View>
               </View>
-              
-              {/* Chart Legend */}
+
               <View style={styles.chartLegend}>
                 <PieChartSegment color="#3c0bc2ff" label="Rent" amount="2,000.00" />
                 <PieChartSegment color="#C20B2F" label="Chillings" amount="2,500.00" />
@@ -149,7 +127,7 @@ export default function ExpensesScreen() {
           {/* Transactions Section */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Transactions</Text>
-            
+
             <TransactionItem
               icon="arrow-bottom-left"
               direction="in"
@@ -158,7 +136,6 @@ export default function ExpensesScreen() {
               amount="5,000.00"
               date="1 Jul, 2025"
             />
-            
             <TransactionItem
               icon="arrow-bottom-left"
               direction="in"
@@ -167,7 +144,6 @@ export default function ExpensesScreen() {
               amount="15,000.00"
               date="15 March,2025"
             />
-            
             <TransactionItem
               icon="arrow-top-right"
               direction="out"

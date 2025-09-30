@@ -1,4 +1,3 @@
-// AccountsScreen.js — red header fixed; only My Accounts scrolls (trendline fixed)
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
 import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
@@ -21,9 +20,7 @@ const AccountItem = ({ icon, iconColor, title, subtitle, amount, status, rightBu
       <Text style={styles.accountSubtitle}>{subtitle}</Text>
     </View>
     <View style={styles.accountRight}>
-      {amount !== undefined && amount !== "" && (
-        <Text style={styles.accountAmount}>GHC {amount}</Text>
-      )}
+      {amount && <Text style={styles.accountAmount}>GHC {amount}</Text>}
       {status && <Text style={styles.accountStatus}>{status}</Text>}
       {rightButton && (
         <TouchableOpacity style={styles.manageButton}>
@@ -39,14 +36,12 @@ export default function AccountsScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* Fixed red header (NOT inside the ScrollView) */}
+      {/* Fixed red header */}
       <View style={styles.redHeader}>
         <View style={styles.headerTop}>
-          {/* Back arrow navigates to Overview tab */}
-         <TouchableOpacity onPress={() => navigation.navigate("OverviewScreen")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Overview")}>
             <Feather name="arrow-left" size={24} color="#fff" />
           </TouchableOpacity>
-
 
           <TouchableOpacity style={styles.addAccountButton}>
             <Feather name="plus" size={20} color="#fff" />
@@ -63,7 +58,7 @@ export default function AccountsScreen() {
           </View>
         </View>
 
-        {/* Trendline stays fixed because redHeader is fixed */}
+        {/* Trendline */}
         <View style={[styles.trendlineWrap, { marginTop: 200 }]} pointerEvents="none">
           <Svg width={width} height={50} viewBox={`0 0 ${width} 50`} preserveAspectRatio="xMidYMid slice">
             <Path
@@ -77,22 +72,21 @@ export default function AccountsScreen() {
         </View>
       </View>
 
-      {/* Scrollable area: only this scrolls */}
+      {/* Scrollable content */}
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* White content pulled up so it overlaps the fixed red header & trendline */}
         <View style={styles.whiteContent}>
-          {/* My Accounts Section */}
+          {/* My Accounts */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>My Accounts</Text>
               
-              {/* Expenses button navigates to Transactions tab */}
+              {/* Expenses button navigates to ExpensesScreen */}
               <TouchableOpacity
                 style={styles.expensesButton}
-                onPress={() => navigation.navigate("Transact")}
+                onPress={() => navigation.navigate("ExpensesScreen")}
               >
                 <Text style={styles.expensesButtonText}>Expenses</Text>
                 <Feather name="chevron-right" size={16} color="#fff" />
@@ -118,7 +112,7 @@ export default function AccountsScreen() {
             />
           </View>
 
-          {/* Investments Section */}
+          {/* Investments */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Investments</Text>
 
@@ -141,7 +135,7 @@ export default function AccountsScreen() {
             />
           </View>
 
-          {/* Subscriptions Section */}
+          {/* Subscriptions */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Subscriptions</Text>
 
